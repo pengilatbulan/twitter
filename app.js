@@ -9,6 +9,7 @@ const pool = new Pool({
   port: 5432,
   ssl: {
     rejectUnauthorized: false,
+  },
 });
 
 const server = http.createServer(async (req, res) => {
