@@ -2,10 +2,10 @@ const http = require('http');
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  user: 'your_database_user',
-  host: 'your_database_host',
-  database: 'your_database_name',
-  password: 'your_database_password',
+  user: 'me',
+  host: 'dpg-cfeb7gsgqg46rpn7ao20-a',
+  database: 'cakcak',
+  password: 'vq7TCgO99HCsu3JNcQmNtoQfLTlFoIwM',
   port: 5432,
   ssl: {
     rejectUnauthorized: false,
