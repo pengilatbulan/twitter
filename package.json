@@ -1,0 +1,13 @@
+{
+  "name": "my-node-app",
+  "version": "1.0.0",
+  "description": "My Node.js web service",
+  "main": "app.js",
+  "dependencies": {
+    "http": "^0.0.1",
+    "pg": "^8.6.0"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
