@@ -11,21 +11,21 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false,
   },
-});
+})
 
 app.use(bodyParser.json())
 app.use(
     bodyParser.urlencoded({
         extended: true,
     })
-);
+)
 
 app.get('/', (request, response) => {
     response.json({
         info: 'Tweets, but editable'
     })
-});
-mountRoutes(app);
+})
+mountRoutes(app)
 
 const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && req.url === '/') {
