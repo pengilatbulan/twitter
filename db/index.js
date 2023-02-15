@@ -1,7 +1,8 @@
-const helper = require('../helper')
+const helper = require('../helper');
 const http = require('http');
 const { Pool } = require('pg');
-const port = 3000
+const port = 3000;
+const app = express();
 const pool = new Pool({
   user: 'me',
   host: 'dpg-cfeb7gsgqg46rpn7ao20-a',
