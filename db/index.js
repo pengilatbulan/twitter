@@ -1,6 +1,7 @@
 const express = require('express');
 const helper = require('../helper');
 const http = require('http');
+const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const port = 3000;
 const app = express();
