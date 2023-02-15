@@ -37,7 +37,10 @@ const server = http.createServer(async (req, res) => {
       const result = await client.query('SELECT $1::text as message', ['Hello, world!']);
       const message = result.rows[0].message;
       client.release();
-      res.json(message);
+      //res.json(message);
+       res.json({
+        info: message
+    })
       // res.setHeader('Content-Type', 'text/plain');
       //res.end(message);
     } catch (err) {
