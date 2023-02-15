@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const helper = require('../helper')
 const Router = require('express-promise-router')
-const db = require('../db')
+const db = require('app')
 var fs = require('fs') // for handling data files such as photos
 var path = require('path'); //
 
