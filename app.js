@@ -23,7 +23,7 @@ app.use(
     })
 );
 
-app.get('/', (request, response) => {
+app.get('/health', (request, response) => {
     response.json({
         info: 'Tweets, but editable'
     })
