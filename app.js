@@ -1,6 +1,10 @@
 const http = require('http');
 const { Pool } = require('pg');
-
+const express = require('express')
+const bodyParser = require('body-parser')
+const mountRoutes = require('./routes')
+const app = express()
+const port = 3000
 const pool = new Pool({
   user: 'me',
   host: 'dpg-cfeb7gsgqg46rpn7ao20-a',
@@ -11,6 +15,20 @@ const pool = new Pool({
     rejectUnauthorized: false,
   },
 });
+
+app.use(bodyParser.json())
+app.use(
+    bodyParser.urlencoded({
+        extended: true,
+    })
+);
+
+app.get('/', (request, response) => {
+    response.json({
+        info: 'Tweets, but editable'
+    })
+});
+mountRoutes(app);
 
 const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && req.url === '/') {
@@ -33,6 +51,6 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(3000, () => {
-  console.log('Server is listening on port 3000');
+server.listen(port, () => {
+  console.log('Server is listening on port '+ port.toString());
 });
