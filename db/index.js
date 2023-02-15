@@ -17,32 +17,6 @@ const pool = new Pool({
   },
 });
 
-const server = http.createServer(async (req, res) => {
-  if (req.method === 'GET' && req.url === '/') {
-    try {
-      const client = await pool.connect();
-      const result = await client.query('SELECT $1::text as message', ['Hello, world!']);
-      const message = result.rows[0].message;
-      client.release();
-
-      res.setHeader('Content-Type', 'text/plain');
-      res.end(message);
-    } catch (err) {
-      console.error('Error executing query', err.stack);
-      res.statusCode = 500;
-      res.end('Internal server error');
-    }
-  } else {
-    res.statusCode = 404;
-    res.end('Not found');
-  }
-});
-
-server.listen(port, () => {
-  console.log('Server is listening on port '+ port.toString());
-});
-
-
 // access token validator
 async function validateAccessToken(id,token){
   const { rows } = await pool.query("SELECT access_token FROM users WHERE ID = $1",[id])
