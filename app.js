@@ -40,7 +40,7 @@ const server = http.createServer(async (req, res) => {
       //res.json(message);
        res.json({
         info: 'message'
-    })
+    });
       // res.setHeader('Content-Type', 'text/plain');
       //res.end(message);
     } catch (err) {
