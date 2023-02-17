@@ -38,7 +38,7 @@ const server = http.createServer(async (req, res) => {
       const message = result.rows[0].message;
       client.release();      
       res.setHeader('Content-Type', 'application/json');   //text/plain
-      res.end(message);
+      res.end(JSON.stringify({ message: message }));
     } catch (err) {
       console.error('Error executing query', err.stack);
       res.statusCode = 500;
