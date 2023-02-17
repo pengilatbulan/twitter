@@ -21,33 +21,57 @@ app.use(
     bodyParser.urlencoded({
         extended: true,
     })
-);
+)
 
 app.get('/health', (request, response) => {
     response.json({
         info: 'Tweets, but editable'
     })
-});
+})
 mountRoutes(app);
 
 const server = http.createServer(async (req, res) => {
-  if (req.method === 'GET' && req.url === '/') {
-    try {
+  if (req.method === 'GET' && req.url === '/') 
+  {
+    try 
+    {
       const client = await pool.connect();
       const result = await client.query('SELECT $1::text as message', ['Hello, world!']);
       const message = result.rows[0].message;
       client.release();      
       res.setHeader('Content-Type', 'application/json');   //text/plain
       res.end(JSON.stringify({ message: message }));
-    } catch (err) {
+    } 
+    catch (err) 
+    {
       console.error('Error executing query', err.stack);
       res.statusCode = 500;
       res.end('Internal server error');
     }
-  } else {
+  } else if(req.method === 'GET' && req.url === '/health') 
+  {
+     try 
+    {
+      const client = await pool.connect();
+      const result = await client.query('SELECT $1::text as message', ['The Server is healthy!']);
+      const message = result.rows[0].message;
+      client.release();      
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ message: message }));
+    } 
+    catch (err) 
+    {
+      console.error('Error executing query', err.stack);
+      res.statusCode = 500;
+      res.end('Internal server error');
+    } 
+  } 
+  else 
+  {
     res.statusCode = 404;
     res.end('Not found');
   }
+  
 });
 
 server.listen(port, () => {
