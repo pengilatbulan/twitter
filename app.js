@@ -39,7 +39,7 @@ const server = http.createServer(async (req, res) => {
       client.release();
       //res.json(message);
        res.json({
-        info: message
+        info: 'message'
     })
       // res.setHeader('Content-Type', 'text/plain');
       //res.end(message);
