@@ -16,6 +16,15 @@ const pool = new Pool({
   },
 });
 
+const Twit = require('twit');
+
+const T = new Twit({
+  consumer_key:         'k1j3vY9lTpY8XktI63dImj6x1',
+  consumer_secret:      'MPhRvdTN3BE8uj48dxsdNTpb1GV2ZR19MxDiSdSVrZe7lZzYgR',
+  access_token:         '1110881633970745344-60jEawMTE3pjxKfiDhjtY9pdiYQcJZ',
+  access_token_secret:  'ED2bcPMuaajZZem35QD4b8feKCRYRlFb4eznlam1SrREt'
+});
+
 app.use(bodyParser.json())
 app.use(
     bodyParser.urlencoded({
