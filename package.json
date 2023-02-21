@@ -4,6 +4,7 @@
   "description": "Saadson web service",
   "main": "app.js",
   "dependencies": {
+    "twit": "^2.2.11",
     "pg": "^8.9.0",
     "bcryptjs": "^2.4.3",
     "express": "^4.18.2",
