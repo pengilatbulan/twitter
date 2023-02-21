@@ -94,9 +94,9 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify(data));
     });
     const client = await pool.connect();
-    const result = await client.query('SELECT $1::text as message', ['The Server is healthy!']);
-    const message = result.rows[0].message;
-    client.release();
+    //const result = await client.query('SELECT $1::text as message', ['The Server is healthy!']);
+    //const message = result.rows[0].message;
+    //client.release();
     //res.setHeader('Content-Type', 'application/json');
     //res.end(JSON.stringify({ message: message }));
   } catch (err) {
