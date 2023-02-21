@@ -81,7 +81,7 @@ const server = http.createServer(async (req, res) => {
     } 
  } else if (req.method === 'GET' && req.url.startsWith('/twitsearch')) {
   try {
-    const url = new URL(req.url, `https://${req.headers.host}`);
+    const url = new URL(req.url, `http://${req.headers.host}`);
     const keyword = url.searchParams.get('keyword');
     if (!keyword) {
       res.statusCode = 400;
@@ -90,13 +90,15 @@ const server = http.createServer(async (req, res) => {
     }
     T.get('search/tweets', { q: keyword, geocode: `${latitude},${longitude},${radius}km`, count: 10 }, function(err, data, response) {
       console.log(data);
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(data));
     });
     const client = await pool.connect();
     const result = await client.query('SELECT $1::text as message', ['The Server is healthy!']);
     const message = result.rows[0].message;
     client.release();
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ message: message }));
+    //res.setHeader('Content-Type', 'application/json');
+    //res.end(JSON.stringify({ message: message }));
   } catch (err) {
     console.error('Error executing query', err.stack);
     res.statusCode = 500;
