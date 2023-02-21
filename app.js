@@ -88,7 +88,7 @@ const server = http.createServer(async (req, res) => {
       res.end('Please provide your_keyword parameter');
       return;
     }
-    T.get('search/tweets', { q: your_keyword, geocode: `${latitude},${longitude},${radius}km`, count: 10 }, function(err, data, response) {
+    T.get('search/tweets', { q: keyword, geocode: `${latitude},${longitude},${radius}km`, count: 10 }, function(err, data, response) {
       console.log(data);
     });
     const client = await pool.connect();
