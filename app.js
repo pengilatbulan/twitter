@@ -25,6 +25,11 @@ const T = new Twit({
   access_token_secret:  'ED2bcPMuaajZZem35QD4b8feKCRYRlFb4eznlam1SrREt'
 });
 
+// Set the location coordinates and radius in miles
+const latitude = 4.079733;
+const longitude = 102.116417;
+const radius = 300; // 10 miles
+
 app.use(bodyParser.json())
 app.use(
     bodyParser.urlencoded({
@@ -61,6 +66,26 @@ const server = http.createServer(async (req, res) => {
   {
      try 
     {
+      const client = await pool.connect();
+      const result = await client.query('SELECT $1::text as message', ['The Server is healthy!']);
+      const message = result.rows[0].message;
+      client.release();      
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ message: message }));
+    } 
+    catch (err) 
+    {
+      console.error('Error executing query', err.stack);
+      res.statusCode = 500;
+      res.end('Internal server error');
+    } 
+  } else if(req.method === 'GET' && req.url === '/twitsearch') 
+  {
+     try 
+    {
+      T.get('search/tweets', { q: 'your_keyword', geocode: `${latitude},${longitude},${radius}km`, count: 10 }, function(err, data, response) {
+        console.log(data);
+      });
       const client = await pool.connect();
       const result = await client.query('SELECT $1::text as message', ['The Server is healthy!']);
       const message = result.rows[0].message;
