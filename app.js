@@ -79,7 +79,7 @@ const server = http.createServer(async (req, res) => {
       res.statusCode = 500;
       res.end('Internal server error');
     } 
- } else if (req.method === 'GET' && req.url.startsWith('/twitsearch')) {
+ } else if (req.method === 'GET' && req.url.startsWith('/ts')) {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const keyword = url.searchParams.get('keyword');
@@ -90,8 +90,18 @@ const server = http.createServer(async (req, res) => {
     }
     T.get('search/tweets', { q: keyword, geocode: `${latitude},${longitude},${radius}km`, count: 10 }, function(err, data, response) {
       console.log(data);
+      const filteredTweet = data.map(obj => {
+      return {
+               created_at: obj.created_at,
+               id_str: obj.id_str,
+               name: obj.user.name,
+               screen_name: obj.user.screen_name,
+               followers_count: obj.user.followers_count,
+               favorite_count: obj.favorite_count,
+               text: obj.text };
+    });
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(data));
+      res.end(JSON.stringify(filteredTweet));
     });
     const client = await pool.connect();
     //const result = await client.query('SELECT $1::text as message', ['The Server is healthy!']);
