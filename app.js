@@ -83,7 +83,7 @@ const server = http.createServer(async (req, res) => {
     }
   } else if (req.method === 'GET' && req.url === '/harakah') {
   try {
-  http.get('http://harakahdaily.net/index.php/feed/', (response) => {
+  http.get('http://harakahdaily.net/index.php', (response) => {
     let xml = '';
     response.on('data', (chunk) => {
       xml += chunk;
