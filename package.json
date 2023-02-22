@@ -5,7 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "striptags": "^3.2.0",
-    "xml2js": "^0.4.23",
+    "fast-xml-parser": "^4.1.2",
     "twit": "^2.2.11",
     "pg": "^8.9.0",
     "bcryptjs": "^2.4.3",
