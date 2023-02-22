@@ -90,7 +90,13 @@ const server = http.createServer(async (req, res) => {
     }
     T.get('search/tweets', { q: keyword, geocode: `${latitude},${longitude},${radius}km`, count: 10 }, function(err, data, response) {
       console.log(data);
-      const filteredTweet = data.map(obj => {
+      // Check if data has a `statuses` property that contains an array of tweets
+      if (!data.statuses) {
+        res.statusCode = 400;
+        res.end('No tweets found');
+        return;
+      }
+      const filteredTweet = data.statuses.map(obj => {
       return {
                created_at: obj.created_at,
                id_str: obj.id_str,
