@@ -97,6 +97,7 @@ const server = http.createServer(async (req, res) => {
         };
         const result = parser.parse(xml, options);
         const items = result.rss.channel.item;
+        console.log(items)
         const extractedItems = items.map((item) => {
           const title = item.title;
           const description = item.description;
