@@ -83,24 +83,27 @@ const server = http.createServer(async (req, res) => {
     }
   } else if (req.method === 'GET' && req.url === '/harakah') {
   try {
-
-    http.get('http://harakahdaily.net/index.php/feed/', (response) => {
-      let xml = '';
-      response.on('data', (chunk) => {
-        xml += chunk;
-      });
-        console.log(JSON.stringify(data, null, 2));
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ message: data }));
-      });
-    }).on('error', (err) => {
-      console.error(err);
+  http.get('http://harakahdaily.net/index.php/feed/', (response) => {
+    let xml = '';
+    response.on('data', (chunk) => {
+      xml += chunk;
     });
-  } catch (err) {
-    console.error('Error executing query', err.stack);
+    response.on('end', () => {
+      console.log(JSON.stringify(xml, null, 2));
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ message: xml }));
+    });
+  }).on('error', (err) => {
+    console.error(err);
     res.statusCode = 500;
     res.end('Internal server error');
-  }
+  });
+} catch (err) {
+  console.error('Error executing query', err.stack);
+  res.statusCode = 500;
+  res.end('Internal server error');
+}
+
 } else if (req.method === 'GET' && req.url.startsWith('/ts')) {
   try {
     const client = await pool.connect();
@@ -146,7 +149,6 @@ const server = http.createServer(async (req, res) => {
     res.statusCode = 404;
     res.end('Not found');
   }
-  
 });
 
 server.listen(port, () => {
