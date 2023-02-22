@@ -83,7 +83,6 @@ const server = http.createServer(async (req, res) => {
     }
   } else if (req.method === 'GET' && req.url === '/harakah') {
   try {
-    const client = await pool.connect();
 
     http.get('http://harakahdaily.net/index.php/feed/', (response) => {
       let xml = '';
@@ -112,8 +111,6 @@ const server = http.createServer(async (req, res) => {
     }).on('error', (err) => {
       console.error(err);
     });
-
-    client.release();
   } catch (err) {
     console.error('Error executing query', err.stack);
     res.statusCode = 500;
