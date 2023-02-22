@@ -89,7 +89,7 @@ const server = http.createServer(async (req, res) => {
       response.on('data', (chunk) => {
         xml += chunk;
       });
-     mountRoutes(app);
+      console.log(response);
       response.on('end', () => {
         const options = {
           attributeNamePrefix: '',
