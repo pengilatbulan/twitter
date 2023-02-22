@@ -121,7 +121,7 @@ const server = http.createServer(async (req, res) => {
       res.end('Internal server error');
     }
   }
-} else if (req.method === 'GET' && req.url.startsWith('/ts')) {
+  else if (req.method === 'GET' && req.url.startsWith('/ts')) {
   try {
     const client = await pool.connect();
     const url = new URL(req.url, `http://${req.headers.host}`);
