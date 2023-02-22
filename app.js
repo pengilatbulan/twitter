@@ -81,6 +81,7 @@ const server = http.createServer(async (req, res) => {
       res.statusCode = 500;
       res.end('Internal server error');
     }
+
   } else if (req.method === 'GET' && req.url === '/harakah') {
   try {
   http.get('http://harakahdaily.net/index.php', (response) => {
@@ -102,8 +103,24 @@ const server = http.createServer(async (req, res) => {
   console.error('Error executing query', err.stack);
   res.statusCode = 500;
   res.end('Internal server error');
-}
-
+} else if(req.method === 'GET' && req.url === '/har') 
+  {
+     try 
+    {
+      const client = await pool.connect();
+      const result = await client.query('SELECT $1::text as message', ['The Server is healthy!']);
+      const message = result.rows[0].message;
+      client.release();      
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ message: message }));
+    } 
+    catch (err) 
+    {
+      console.error('Error executing query', err.stack);
+      res.statusCode = 500;
+      res.end('Internal server error');
+    }
+  }
 } else if (req.method === 'GET' && req.url.startsWith('/ts')) {
   try {
     const client = await pool.connect();
