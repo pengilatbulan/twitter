@@ -84,12 +84,13 @@ const server = http.createServer(async (req, res) => {
     const client = await pool.connect();
     const url = new URL(req.url, `http://${req.headers.host}`);
     const keyword = url.searchParams.get('keyword');
+    const count = url.searchParams.get('count') || 10; // default value is 10
     if (!keyword) {
       res.statusCode = 400;
-      res.end('Please provide your_keyword parameter');
+      res.end('Please provide the "keyword" parameter');
       return;
     }
-    T.get('search/tweets', { q: keyword, geocode: `${latitude},${longitude},${radius}km`, count: 10, tweet_mode: 'extended', include_rts: false, exclude_replies: true}, function(err, data, response) {
+    T.get('search/tweets', { q: keyword, geocode: `${latitude},${longitude},${radius}km`, count: count, tweet_mode: 'extended', include_rts: false, exclude_replies: true }, function(err, data, response) {
       console.log(data);
       // Check if data has a `statuses` property that contains an array of tweets
       if (!data.statuses) {
@@ -98,15 +99,16 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const filteredTweet = data.statuses.map(obj => {
-      return {
-               created_at: obj.created_at,
-               id_str: obj.id_str,
-               name: obj.user.name,
-               screen_name: obj.user.screen_name,
-               followers_count: obj.user.followers_count,
-               favorite_count: obj.favorite_count,
-               full_text: obj.full_text };
-    });
+        return {
+          created_at: obj.created_at,
+          id_str: obj.id_str,
+          name: obj.user.name,
+          screen_name: obj.user.screen_name,
+          followers_count: obj.user.followers_count,
+          favorite_count: obj.favorite_count,
+          full_text: obj.full_text
+        };
+      });
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(filteredTweet));
     });
