@@ -1,5 +1,5 @@
 const http = require('http');
-const xml2json = require('xml2json');
+const parser = require('fast-xml-parser');
 const striptags = require('striptags');
 const { Pool } = require('pg');
 const express = require('express')
@@ -86,36 +86,32 @@ const server = http.createServer(async (req, res) => {
     const client = await pool.connect();
 
     http.get('http://harakahdaily.net/index.php/feed/', (response) => {
-  let xml = '';
-  response.on('data', (chunk) => {
-    xml += chunk;
-  });
-  response.on('end', () => {
-    const options = {
-      object: true,
-      reversible: false,
-      coerce: false,
-      sanitize: true,
-      trim: true,
-      arrayNotation: false,
-      alternateTextNode: false
-    };
-    const result = xml2json.toJson(xml, options);
-    const items = result.rss.channel.item;
-    const extractedItems = items.map((item) => {
-      const title = striptags(item.title);
-      const description = striptags(item.description);
-      const pubDate = item.pubDate;
-      const contentEncoded = striptags(item['content:encoded']);
-      return { title, description, pubDate, contentEncoded };
+      let xml = '';
+      response.on('data', (chunk) => {
+        xml += chunk;
+      });
+      console.log(xml);
+      response.on('end', () => {
+        const options = {
+          attributeNamePrefix: '',
+          ignoreAttributes: false
+        };
+        const result = parser.parse(xml, options);
+        const items = result.rss.channel.item;
+        const extractedItems = items.map((item) => {
+          const title = item.title;
+          const description = item.description;
+          const pubDate = item.pubDate;
+          const contentEncoded = item['content:encoded'];
+          return { title, description, pubDate, contentEncoded };
+        });
+        console.log(JSON.stringify(extractedItems, null, 2));
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: extractedItems }));
+      });
+    }).on('error', (err) => {
+      console.error(err);
     });
-    console.log(JSON.stringify(extractedItems, null, 2));
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ message: extractedItems }));
-  });
-}).on('error', (err) => {
-  console.error(err);
-});
 
     client.release();
   } catch (err) {
