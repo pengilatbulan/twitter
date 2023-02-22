@@ -81,6 +81,7 @@ const server = http.createServer(async (req, res) => {
     } 
  } else if (req.method === 'GET' && req.url.startsWith('/ts')) {
   try {
+    const client = await pool.connect();
     const url = new URL(req.url, `http://${req.headers.host}`);
     const keyword = url.searchParams.get('keyword');
     if (!keyword) {
@@ -109,10 +110,9 @@ const server = http.createServer(async (req, res) => {
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(filteredTweet));
     });
-    const client = await pool.connect();
     //const result = await client.query('SELECT $1::text as message', ['The Server is healthy!']);
     //const message = result.rows[0].message;
-    //client.release();
+    client.release();
     //res.setHeader('Content-Type', 'application/json');
     //res.end(JSON.stringify({ message: message }));
   } catch (err) {
