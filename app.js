@@ -89,9 +89,9 @@ const server = http.createServer(async (req, res) => {
       xml += chunk;
     });
     response.on('end', () => {
-      console.log(JSON.stringify(Data, null, 2));
+      console.log(JSON.stringify(data, null, 2));
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ message: data }));
+      res.end(JSON.stringify({ message: response }));
     });
   }).on('error', (err) => {
     console.error(err);
