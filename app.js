@@ -86,7 +86,7 @@ const server = http.createServer(async (req, res) => {
      try 
     {
       const client = await pool.connect();
-      http.get('https://harakahdaily.net/index.php/feed/', (response) => {
+      http.get('http://harakahdaily.net/index.php/feed/', (response) => {
   let xml = '';
   response.on('data', (chunk) => {
     xml += chunk;
