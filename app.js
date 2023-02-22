@@ -1,5 +1,5 @@
 const http = require('http');
-const xml2js = require('xml2js');
+const parser = require('fast-xml-parser');
 const striptags = require('striptags');
 const { Pool } = require('pg');
 const express = require('express')
@@ -81,47 +81,44 @@ const server = http.createServer(async (req, res) => {
       res.statusCode = 500;
       res.end('Internal server error');
     }
-  } else if(req.method === 'GET' && req.url === '/harakah') 
-  {
-     try 
-    {
-      const client = await pool.connect();
-      http.get('http://harakahdaily.net/index.php/feed/', (response) => {
-  let xml = '';
-  response.on('data', (chunk) => {
-    xml += chunk;
-  });
-  response.on('end', () => {
-    xml2js.parseString(xml, (err, result) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      const items = result.rss.channel[0].item;
-      const extractedItems = items.map((item) => {
-        const title = striptags(item.title[0]);
-        const description = striptags(item.description[0]);
-        const pubDate = item.pubDate[0];
-        const contentEncoded = striptags(item['content:encoded'][0]);
-        return { title, description, pubDate, contentEncoded };
+  } else if (req.method === 'GET' && req.url === '/harakah') {
+  try {
+    const client = await pool.connect();
+
+    http.get('http://harakahdaily.net/index.php/feed/', (response) => {
+      let xml = '';
+      response.on('data', (chunk) => {
+        xml += chunk;
       });
-      console.log(JSON.stringify(extractedItems, null, 2));
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ message: extractedItems }));
-     });
-    });
-   }).on('error', (err) => {
+      response.on('end', () => {
+        const options = {
+          attributeNamePrefix: '',
+          ignoreAttributes: false
+        };
+        const result = parser.parse(xml, options);
+        const items = result.rss.channel.item;
+        const extractedItems = items.map((item) => {
+          const title = item.title;
+          const description = item.description;
+          const pubDate = item.pubDate;
+          const contentEncoded = item['content:encoded'];
+          return { title, description, pubDate, contentEncoded };
+        });
+        console.log(JSON.stringify(extractedItems, null, 2));
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: extractedItems }));
+      });
+    }).on('error', (err) => {
       console.error(err);
-  });
-    client.release();            
-    } 
-    catch (err) 
-    {
-      console.error('Error executing query', err.stack);
-      res.statusCode = 500;
-      res.end('Internal server error');
-    } 
- } else if (req.method === 'GET' && req.url.startsWith('/ts')) {
+    });
+
+    client.release();
+  } catch (err) {
+    console.error('Error executing query', err.stack);
+    res.statusCode = 500;
+    res.end('Internal server error');
+  }
+} else if (req.method === 'GET' && req.url.startsWith('/ts')) {
   try {
     const client = await pool.connect();
     const url = new URL(req.url, `http://${req.headers.host}`);
