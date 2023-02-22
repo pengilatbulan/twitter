@@ -89,24 +89,9 @@ const server = http.createServer(async (req, res) => {
       response.on('data', (chunk) => {
         xml += chunk;
       });
-      console.log(response);
-      response.on('end', () => {
-        const options = {
-          attributeNamePrefix: '',
-          ignoreAttributes: false
-        };
-        const result = parser.parse(xml, options);
-        const items = result.rss.channel.item;
-        const extractedItems = items.map((item) => {
-          const title = item.title;
-          const description = item.description;
-          const pubDate = item.pubDate;
-          const contentEncoded = item['content:encoded'];
-          return { title, description, pubDate, contentEncoded };
-        });
-        console.log(JSON.stringify(extractedItems, null, 2));
+        console.log(JSON.stringify(data, null, 2));
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ message: extractedItems }));
+        res.end(JSON.stringify({ message: data }));
       });
     }).on('error', (err) => {
       console.error(err);
