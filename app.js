@@ -105,7 +105,7 @@ const server = http.createServer(async (req, res) => {
                screen_name: obj.user.screen_name,
                followers_count: obj.user.followers_count,
                favorite_count: obj.favorite_count,
-               text: obj.text };
+               full_text: obj.full_text };
     });
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(filteredTweet));
