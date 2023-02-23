@@ -106,7 +106,7 @@ const server = http.createServer(async (req, res) => {
  }
 } else if(req.method === 'GET' && req.url === '/harakah') 
   {
-        try {
+      try {
     const feedUrl = 'https://harakahdaily.net/index.php/feed/';
     const parser = new Parser();
     parser.parseURL(feedUrl).then(feed => {
@@ -121,11 +121,12 @@ const server = http.createServer(async (req, res) => {
         pubDate: item.pubDate,
         creator: item.creator,
         category: item.category,
-        encoded: item['content:encoded'].replace(/<\/?(?:p|strong|a|em)[^>]*>/g, '').replace(/\n/g, '').replace(/<[^>]+>/g, ''),
+        encoded: item['content:encoded'].replace(/<\/?(?:p|strong|a|em)[^>]*>/g, '').replace(/\n/g, '').replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec)),
+      })).map(item => ({
+        ...item,
+        encoded: item.encoded.replace(/The post[\s\S]+?HarakahDaily\./, '')
       }));
       console.log(JSON.stringify(items, null, 2));
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(items));
     })
     .catch(error => {
       console.log(error);
