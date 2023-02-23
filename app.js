@@ -106,33 +106,40 @@ const server = http.createServer(async (req, res) => {
  }
 } else if(req.method === 'GET' && req.url === '/har') 
   {
-    try 
-    {
-      const feedUrl = 'https://harakahdaily.net/index.php/feed/';
-      const parser = new Parser();
-      parser.parseURL(feedUrl).then(feed => {
-        console.log(`Feed Title: ${feed.title}`);
-        console.log(`Feed Description: ${feed.description}`);
-        console.log(`Feed Link: ${feed.link}`);
-        console.log('=====================================');
-      feed.items.forEach(item => {
-        console.log(`Title: ${item.title}`);
-        console.log(`Link: ${item.link}`);
-        console.log(`Description: ${item.contentSnippet}`);
-        console.log(`Published Date: ${item.pubDate}`);
-        console.log('=====================================');
+    try {
+    const feedUrl = 'https://harakahdaily.net/index.php/feed/';
+    const parser = new Parser();
+    parser.parseURL(feedUrl).then(feed => {
+      const parsedItems = feed.items.map(item => {
+        const contentEncoded = item['content:encoded'];
+        const urlMatch = contentEncoded.match(/src="(.*?)"/i);
+        const url = urlMatch ? urlMatch[1] : null;
+
+        const categories = item.categories.map(category => category['_']);
+
+        return {
+          title: item.title,
+          link: item.link,
+          description: item.contentSnippet,
+          author: item.creator,
+          categories: categories,
+          content: contentEncoded,
+          url: url,
+          pubDate: item.pubDate,
+        };
       });
-  })
-  .catch(error => {
-    console.log(error);
-  });
-    } 
-    catch (err) 
-    {
-      console.error('Error executing query', err.stack);
-      res.statusCode = 500;
-      res.end('Internal server error');
-    }
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(parsedItems, null, 2));
+      console.log(JSON.stringify(parsedItems, null, 2));
+      
+    }).catch(error => {
+      console.log(error);
+    });
+  } catch (err) {
+    console.error('Error executing query', err.stack);
+    res.statusCode = 500;
+    res.end('Internal server error');
+  }
 } else if (req.method === 'GET' && req.url.startsWith('/ts')) {
   try {
     const client = await pool.connect();
