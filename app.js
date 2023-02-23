@@ -99,10 +99,11 @@ const server = http.createServer(async (req, res) => {
     res.statusCode = 500;
     res.end('Internal server error');
   });
-} catch (err) {
+ } catch (err) {
   console.error('Error executing query', err.stack);
   res.statusCode = 500;
   res.end('Internal server error');
+ }
 } else if(req.method === 'GET' && req.url === '/har') 
   {
     try 
