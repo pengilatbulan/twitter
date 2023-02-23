@@ -82,7 +82,7 @@ const server = http.createServer(async (req, res) => {
       res.end('Internal server error');
     }
 
-  } else if (req.method === 'GET' && req.url === '/harakah') {
+  } else if (req.method === 'GET' && req.url === '/backup') {
   try {
   http.get('http://harakahdaily.net/index.php', (response) => {
     let xml = '';
@@ -104,9 +104,9 @@ const server = http.createServer(async (req, res) => {
   res.statusCode = 500;
   res.end('Internal server error');
  }
-} else if(req.method === 'GET' && req.url === '/har') 
+} else if(req.method === 'GET' && req.url === '/harakah') 
   {
-      try {
+        try {
     const feedUrl = 'https://harakahdaily.net/index.php/feed/';
     const parser = new Parser();
     parser.parseURL(feedUrl).then(feed => {
@@ -114,21 +114,18 @@ const server = http.createServer(async (req, res) => {
       console.log(`Feed Description: ${feed.description}`);
       console.log(`Feed Link: ${feed.link}`);
       console.log('=====================================');
-      const items = feed.items.map(item => {
-        const contentEncoded = item['content:encoded'];
-        const strippedContent = contentEncoded.replace(/(<([^>]+)>)/gi, '');
-        const strippedContentNoNewLine = strippedContent.replace(/\n/g, '');
-        return {
-          title: item.title,
-          link: item.link,
-          creator: item['dc:creator'],
-          category: item.category,
-          description: item.contentSnippet,
-          publishedDate: item.pubDate,
-          contentEncoded: strippedContentNoNewLine
-        };
-      });
-      console.log(items);
+      const items = feed.items.map(item => ({
+        title: item.title,
+        link: item.link,
+        description: item.contentSnippet.replace(/<\/?(?:p|strong|a|em)[^>]*>/g, '').replace(/\n/g, ''),
+        pubDate: item.pubDate,
+        creator: item.creator,
+        category: item.category,
+        encoded: item['content:encoded'].replace(/<\/?(?:p|strong|a|em)[^>]*>/g, '').replace(/\n/g, '').replace(/<[^>]+>/g, ''),
+      }));
+      console.log(JSON.stringify(items, null, 2));
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(items));
     })
     .catch(error => {
       console.log(error);
