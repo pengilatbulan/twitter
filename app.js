@@ -106,33 +106,31 @@ const server = http.createServer(async (req, res) => {
  }
 } else if(req.method === 'GET' && req.url === '/har') 
   {
-    try {
+      try {
     const feedUrl = 'https://harakahdaily.net/index.php/feed/';
     const parser = new Parser();
     parser.parseURL(feedUrl).then(feed => {
-      const parsedItems = feed.items.map(item => {
+      console.log(`Feed Title: ${feed.title}`);
+      console.log(`Feed Description: ${feed.description}`);
+      console.log(`Feed Link: ${feed.link}`);
+      console.log('=====================================');
+      const items = feed.items.map(item => {
         const contentEncoded = item['content:encoded'];
-        const urlMatch = contentEncoded.match(/src="(.*?)"/i);
-        const url = urlMatch ? urlMatch[1] : null;
-
-        const categories = item.categories.map(category => category['_']);
-
+        const strippedContent = contentEncoded.replace(/(<([^>]+)>)/gi, '');
+        const strippedContentNoNewLine = strippedContent.replace(/\n/g, '');
         return {
           title: item.title,
           link: item.link,
+          creator: item['dc:creator'],
+          category: item.category,
           description: item.contentSnippet,
-          author: item.creator,
-          categories: categories,
-          content: contentEncoded,
-          url: url,
-          pubDate: item.pubDate,
+          publishedDate: item.pubDate,
+          contentEncoded: strippedContentNoNewLine
         };
       });
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(parsedItems, null, 2));
-      console.log(JSON.stringify(parsedItems, null, 2));
-      
-    }).catch(error => {
+      console.log(items);
+    })
+    .catch(error => {
       console.log(error);
     });
   } catch (err) {
