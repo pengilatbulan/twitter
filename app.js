@@ -1,5 +1,5 @@
 const http = require('http');
-const parser = require('fast-xml-parser');
+const Parser = require('rss-parser');
 const striptags = require('striptags');
 const { Pool } = require('pg');
 const express = require('express')
@@ -105,14 +105,26 @@ const server = http.createServer(async (req, res) => {
   res.end('Internal server error');
 } else if(req.method === 'GET' && req.url === '/har') 
   {
-     try 
+    try 
     {
-      const client = await pool.connect();
-      const result = await client.query('SELECT $1::text as message', ['The Server is healthy!']);
-      const message = result.rows[0].message;
-      client.release();      
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ message: message }));
+      const feedUrl = 'https://harakahdaily.net/index.php/feed/';
+      const parser = new Parser();
+      parser.parseURL(feedUrl).then(feed => {
+        console.log(`Feed Title: ${feed.title}`);
+        console.log(`Feed Description: ${feed.description}`);
+        console.log(`Feed Link: ${feed.link}`);
+        console.log('=====================================');
+      feed.items.forEach(item => {
+        console.log(`Title: ${item.title}`);
+        console.log(`Link: ${item.link}`);
+        console.log(`Description: ${item.contentSnippet}`);
+        console.log(`Published Date: ${item.pubDate}`);
+        console.log('=====================================');
+      });
+  })
+  .catch(error => {
+    console.log(error);
+  });
     } 
     catch (err) 
     {
