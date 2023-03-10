@@ -121,10 +121,7 @@ const server = http.createServer(async (req, res) => {
         pubDate: item.pubDate,
         creator: item.creator,
         category: item.category,
-        encoded: item['content:encoded'].replace(/<\/?(?:p|strong|a|em)[^>]*>/g, '').replace(/\n/g, '').replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec)),
-      })).map(item => ({
-        ...item,
-        encoded: item.encoded.replace(/The post[\s\S]+?HarakahDaily\./, '')
+        encoded: item['content:encoded'].replace(/<\/?(?:p|strong|a|em)[^>]*>/g, '').replace(/\n/g, '').replace(/<[^>]+>/g, ''),
       }));
       console.log(JSON.stringify(items, null, 2));
     })
