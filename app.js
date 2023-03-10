@@ -114,7 +114,7 @@ const server = http.createServer(async (req, res) => {
       console.log(`Feed Description: ${feed.description}`);
       console.log(`Feed Link: ${feed.link}`);
       console.log('=====================================');
-      const items = feed.items.map(item => ({
+           const items = feed.items.map(item => ({
         title: item.title,
         link: item.link,
         description: item.contentSnippet.replace(/<\/?(?:p|strong|a|em)[^>]*>/g, '').replace(/\n/g, ''),
@@ -124,6 +124,8 @@ const server = http.createServer(async (req, res) => {
         encoded: item['content:encoded'].replace(/<\/?(?:p|strong|a|em)[^>]*>/g, '').replace(/\n/g, '').replace(/<[^>]+>/g, ''),
       }));
       console.log(JSON.stringify(items, null, 2));
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(items));
     })
     .catch(error => {
       console.log(error);
